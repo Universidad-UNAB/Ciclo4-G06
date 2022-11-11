@@ -1,0 +1,54 @@
+Crear base de datos 
+use ubicacion
+
+Crear collección a base de datos 
+db.createCollection("dato_ubicacion")
+
+Realizar inserción
+db.dato_ubicacion.insert(
+    {
+        codigo:41,
+        nombre:"Colombia",
+        departamento:{
+            codigo:410001,
+            nombre:"Huila"
+        }
+    }
+)
+
+db.dato_ubicacion.insert(
+    {
+        codigo:41,
+        nombre:"Colombia",
+        departamento:{
+            codigo:410001,
+            nombre:"Huila"
+        }
+    }
+)
+
+db.dato_ubicacion.insert(
+    {
+        codigo:42,
+        nombre:"Perú",
+        departamento:{
+            codigo:410002,
+            nombre:"Hola"
+        }
+    }
+)
+
+db.dato_ubicacion.insert(
+    {
+        codigoPais:41,
+        nombrePais:"Colombia",
+        codigoDepartamento:410001,
+        nombreDepartamento:"Huila"
+    }
+)
+
+Consultar documentos horizontales 
+db.dato_ubicacion.find({nombre:"Colombia"})
+
+Consultar documentos  organizados
+db.dato_ubicacion.find().pretty()
