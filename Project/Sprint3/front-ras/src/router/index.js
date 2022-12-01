@@ -32,7 +32,7 @@ const routes = [
   },
   {
     path: '/security/RegistroUsuario',
-    name: 'role',
+    name: 'roleView',
     component: () => import('../views/security/UserView.vue')
   }
 ]
