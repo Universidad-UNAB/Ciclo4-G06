@@ -46,8 +46,10 @@
                         <td>{{ item.nombre }}</td>
                         <td>{{ item.estado == true ? 'Activo' : 'Inactivo' }}</td>
                         <!-- boton para obtener el id de cada registro -->
-                        <td><img src="../../../node_modules/bootstrap-icons/icons/pencil-square.svg" @click="findByid(item.id)"></td>
-                        <td><img src="../../../node_modules/bootstrap-icons/icons/trash2-fill.svg" @click="deleteById(item.id)"></td>
+                        <td><img src="../../../node_modules/bootstrap-icons/icons/pencil-square.svg"
+                                @click="findByid(item.id)"></td>
+                        <td><img src="../../../node_modules/bootstrap-icons/icons/trash2-fill.svg"
+                                @click="deleteById(item.id)"></td>
                     </tr>
                 </tbody>
             </table>
@@ -73,7 +75,8 @@ export default {
             id: 0,
             nombre: '',
             estado: '',
-            listData: []
+            listData: [],
+            listValidarRole: []
         }
     },
     created() {
@@ -81,49 +84,66 @@ export default {
     },
     methods: {
         loadData: function () {
-            axios.get('http://localhost:9000/api/security/role').then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/role').then(result => {
                 this.listData = result.data
-            })
+            });
+
+            axios.get('http://132.145.199.203:8080/api/security/user').then(result => {
+                this.listValidarRole = result.data
+            });
         },
         findByid: function (id) {
             // metodo para consutlar por el ig del boton impreso en la vista
-            axios.get('http://localhost:9000/api/security/role/' + id).then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/role/' + id).then(result => {
                 this.id = result.data.id;
                 this.nombre = result.data.nombre;
                 this.estado = (result.data.estado == true ? 1 : 0);
             })
         },
         deleteById: function (id) {
-            Swal.fire({
-                title: '¿Esta seguro?',
-                text: "Eliminar registro",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Si, eliminar este registro!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    axios.delete('http://localhost:9000/api/security/role/' + id,).then(() => {
-                        this.MostrarMensaje("El registro se eliminó de forma correcta.", "success");
-                        this.loadData();
-                        this.clearList();
-                    });
-                }
-            })
+
+            var bandera;
+
+            bandera = this.validarReferencia(id)
+
+            if (bandera == true) {
+                Swal.fire({
+                    title: '¿Esta seguro?',
+                    text: "Eliminar registro",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, eliminar este registro!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.delete('http://132.145.199.203:8080/api/security/role/' + id,).then(() => {
+                            this.MostrarMensaje("El registro se eliminó de forma correcta.", "success");
+                            this.loadData();
+                            this.clearList();
+                        });
+                    }
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'No es posible eliminar este registro, hay un usuario asociado.'
+                })
+            }
         },
         clearList: function () {
             this.id = 0,
-            this.nombre = '',
-            this.estado = '',
-            this.listData = []
+                this.nombre = '',
+                this.estado = '',
+                this.listData = []
         },
         dataAdd: function () {
-            let data = {                
+            let data = {
                 nombre: this.nombre,
                 estado: parseInt(this.estado)
             };
-            axios.post('http://localhost:9000/api/security/role', data).then(result => {
+            axios.post('http://132.145.199.203:8080/api/security/role', data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se guardó de forma correcta.", "success");
                     this.loadData();
@@ -136,12 +156,12 @@ export default {
         },
         dataUpdate: function () {
             let data = {
-                id: this.id,                
+                id: this.id,
                 nombre: this.nombre,
                 estado: parseInt(this.estado)
             };
 
-            axios.put('http://localhost:9000/api/security/role/' + this.id, data).then(result => {
+            axios.put('http://132.145.199.203:8080/api/security/role/' + this.id, data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se modificó de forma correcta", "success");
                     this.loadData();
@@ -151,6 +171,17 @@ export default {
                 }
             });
 
+        },
+        validarReferencia: function (id) {
+            var bandera = true;
+
+            this.listValidarRole.forEach((item, index) => {
+                if (item.rolId.id == id) {
+                    bandera = false
+                }
+                console.log(index)
+            })
+            return bandera;
         },
         MostrarMensaje: function (mensaje, statusResult) {
             Swal.fire({

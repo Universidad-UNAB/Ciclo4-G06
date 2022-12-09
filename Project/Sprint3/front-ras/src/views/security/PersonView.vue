@@ -77,8 +77,10 @@
                         <td>{{ item.direccion }}</td>
                         <td>{{ item.estado == true ? 'Activo' : 'Inactivo' }}</td>
                         <!-- boton para obtener el id de cada registro -->
-                        <td><img src="../../../node_modules/bootstrap-icons/icons/pencil-square.svg" @click="findByid(item.id)"></td>
-                        <td><img src="../../../node_modules/bootstrap-icons/icons/trash2-fill.svg" @click="deleteById(item.id)"></td>                        
+                        <td><img src="../../../node_modules/bootstrap-icons/icons/pencil-square.svg"
+                                @click="findByid(item.id)"></td>
+                        <td><img src="../../../node_modules/bootstrap-icons/icons/trash2-fill.svg"
+                                @click="deleteById(item.id)"></td>
                     </tr>
                 </tbody>
             </table>
@@ -109,7 +111,8 @@ export default {
             celular: '',
             direccion: '',
             estado: '',
-            listData: []
+            listData: [],
+            listValidarPerson: []
         }
     },
     created() {
@@ -117,13 +120,17 @@ export default {
     },
     methods: {
         loadData: function () {
-            axios.get('http://localhost:9000/api/security/person').then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/person').then(result => {
                 this.listData = result.data
+            });
+
+            axios.get('http://132.145.199.203:8080/api/security/user').then(result => {
+                this.listValidarPerson = result.data
             })
         },
         findByid: function (id) {
             // metodo para consutlar por el ig del boton impreso en la vista
-            axios.get('http://localhost:9000/api/security/person/' + id).then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/person/' + id).then(result => {
                 this.id = result.data.id;
                 this.tipoDocumento = result.data.tipoDocumento;
                 this.documento = result.data.documento;
@@ -135,23 +142,35 @@ export default {
             })
         },
         deleteById: function (id) {
-            Swal.fire({
-                title: '¿Esta seguro?',
-                text: "Eliminar registro",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Si, eliminar este registro!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    axios.delete('http://localhost:9000/api/security/person/' + id,).then(() => {
-                        this.MostrarMensaje("El registro se eliminó de forma correcta.", "success");
-                        this.loadData();
-                        this.clearList();
-                    });
-                }
-            })
+            var bandera;
+
+            bandera = this.validarReferencia(id)
+
+            if (bandera == true) {
+                Swal.fire({
+                    title: '¿Esta seguro?',
+                    text: "Eliminar registro",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, eliminar este registro!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.delete('http://132.145.199.203:8080/api/security/person/' + id,).then(() => {
+                            this.MostrarMensaje("El registro se eliminó de forma correcta.", "success");
+                            this.loadData();
+                            this.clearList();
+                        });
+                    }
+                })
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'No es posible eliminar este registro, hay un usuario asociado.'                    
+                })
+            }
         },
         clearList: function () {
             this.id = 0,
@@ -174,7 +193,7 @@ export default {
                 direccion: this.direccion,
                 estado: parseInt(this.estado)
             };
-            axios.post('http://localhost:9000/api/security/person', data).then(result => {
+            axios.post('http://132.145.199.203:8080/api/security/person', data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se guardó de forma correcta.", "success");
                     this.loadData();
@@ -197,7 +216,7 @@ export default {
                 estado: parseInt(this.estado)
             };
 
-            axios.put('http://localhost:9000/api/security/person/' + this.id, data).then(result => {
+            axios.put('http://132.145.199.203:8080/api/security/person/' + this.id, data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se modificó de forma correcta", "success");
                     this.loadData();
@@ -207,6 +226,17 @@ export default {
                 }
             });
 
+        },
+        validarReferencia: function (id) {
+            var bandera = true;
+
+            this.listValidarPerson.forEach((item, index) => {
+                if (item.personaId.id == id) {
+                    bandera = false
+                }
+                console.log(index)
+            })
+            return bandera;
         },
         MostrarMensaje: function (mensaje, statusResult) {
             Swal.fire({

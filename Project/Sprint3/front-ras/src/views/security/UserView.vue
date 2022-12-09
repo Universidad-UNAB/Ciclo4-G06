@@ -105,21 +105,21 @@ export default {
     },
     methods: {
         loadData: function () {
-            axios.get('http://localhost:9000/api/security/user').then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/user').then(result => {
                 this.listData = result.data
             });
 
-            axios.get('http://localhost:9000/api/security/person').then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/person').then(result => {
                 this.listPerson = result.data
             });
             
-            axios.get('http://localhost:9000/api/security/role').then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/role').then(result => {
                 this.listRole = result.data
             });
         },
         findByid: function (id) {
             // metodo para consutlar por el ig del boton impreso en la vista
-            axios.get('http://localhost:9000/api/security/user/' + id).then(result => {
+            axios.get('http://132.145.199.203:8080/api/security/user/' + id).then(result => {
                 this.id = result.data.id;
                 this.usuario = result.data.usuario;
                 this.personaId = result.data.personaId.id;
@@ -138,7 +138,7 @@ export default {
                 confirmButtonText: 'Si, eliminar este registro!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:9000/api/security/user/' + id,).then(() => {
+                    axios.delete('http://132.145.199.203:8080/api/security/user/' + id,).then(() => {
                         this.MostrarMensaje("El registro se eliminó de forma correcta.", "success");
                         this.loadData();
                         this.clearList();
@@ -167,7 +167,7 @@ export default {
                 },
                 estado: parseInt(this.estado)
             };
-            axios.post('http://localhost:9000/api/security/user', data).then(result => {
+            axios.post('http://132.145.199.203:8080/api/security/user', data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se guardó de forma correcta.", "success");
                     this.loadData();
@@ -192,7 +192,7 @@ export default {
                 estado: parseInt(this.estado)
             };
 
-            axios.put('http://localhost:9000/api/security/user/' + this.id, data).then(result => {
+            axios.put('http://132.145.199.203:8080/api/security/user/' + this.id, data).then(result => {
                 if (result.data) {
                     this.MostrarMensaje("El registro se modificó de forma correcta", "success");
                     this.loadData();

@@ -26,6 +26,19 @@
               </a>
             </li>
           </ul>
+
+
+          <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Ventas
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a class="dropdown-item" href="#">
+                <router-link class="dropdown-item" to="/">Other</router-link>
+              </a>
+            </li>           
+          </ul>
         </div>
       </div>
     </div>
@@ -35,6 +48,6 @@
 
 <style>
   body{
-    margin-top: 1%;
+    margin-top: 2%;
   }
 </style>
